@@ -11,8 +11,7 @@
             padding: 0;
             height: 100vh;
             overflow: hidden;
-            background: url='https://ru.files.fm/u/wcqhfz8qfs' no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(45deg, #fff0f5, #ffe4e1);
             touch-action: manipulation;
             position: relative;
         }
@@ -23,29 +22,27 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 32px;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #8b0000;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
             z-index: 2;
             padding: 10px 20px;
-            background: rgba(255, 215, 0, 0.9);
+            background: rgba(255, 250, 205, 0.9);
             border-radius: 15px;
-            border: 2px solid white;
+            border: 2px solid #ff69b4;
         }
 
-        .hamster {
-            width: 350px;
-            height: 350px;
+        .target {
+            font-size: 120px;
             cursor: pointer;
             position: absolute;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
             transition: all 0.3s ease;
-            filter: drop-shadow(0 0 10px rgba(255,215,0,0.8));
+            text-shadow: 0 0 15px rgba(255,105,180,0.5);
         }
 
-        .hamster:active {
-            transform: scale(0.85) rotate(10deg);
-            filter: drop-shadow(0 0 20px rgba(255,105,180,1));
+        .target:active {
+            transform: scale(0.85) rotate(15deg);
+            filter: brightness(1.2);
         }
 
         #invitation {
@@ -54,11 +51,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(45deg, #fff5f5, #ffecec);
+            background: #fffaf0;
             padding: 30px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255,20,147,0.3);
+            box-shadow: 0 0 30px rgba(139,0,0,0.2);
             z-index: 3;
             width: 80%;
             max-width: 500px;
@@ -77,7 +74,6 @@
             color: #8b4513;
             margin: 15px 0;
             font-size: 1.2em;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
         button {
@@ -93,32 +89,49 @@
             box-shadow: 0 4px 15px rgba(255,105,180,0.4);
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,105,180,0.6);
-        }
-
-        .sparkles {
+        .hearts {
             position: absolute;
             pointer-events: none;
-            width: 20px;
-            height: 20px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFD700" d="M12 1L15.09 7.26L22 8.27L17 13.14L18.18 20.02L12 16.77L5.82 20.02L7 13.14L2 8.27L8.91 7.26L12 1Z"/></svg>');
-            animation: sparkle 1s ease-out;
+            font-size: 24px;
+            animation: heartFloat 1s ease-out;
         }
 
-        @keyframes sparkle {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(3) rotate(360deg); }
+        @keyframes heartFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+        }
+
+        .floating-rings {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .ring {
+            position: absolute;
+            font-size: 40px;
+            animation: ringFloat 8s linear infinite;
+        }
+
+        @keyframes ringFloat {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    <div class="floating-rings">
+        <!-- Анимированные плавающие кольца -->
+        <div class="ring" style="left:10%">💍</div>
+        <div class="ring" style="left:30%">💒</div>
+        <div class="ring" style="left:50%">👰</div>
+        <div class="ring" style="left:70%">🤵</div>
+        <div class="ring" style="left:90%">🎉</div>
+    </div>
+
     <div id="counter">❤️ Счет: 0</div>
-    <img src="https://ru.files.fm/u/g45yjtkfbu" 
-         class="hamster" 
-         id="hamster"
-         alt="Хомяк">
+    <div class="target" id="target">💍</div>
     
     <div id="invitation">
         <h2 class="invitation-text">🎉 Вас приглашают на свадьбу! 🎉</h2>
@@ -131,51 +144,52 @@
 
     <script>
         let score = 0;
-        const hamster = document.getElementById('hamster');
+        const target = document.getElementById('target');
         const counter = document.getElementById('counter');
         const invitation = document.getElementById('invitation');
 
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
 
-        hamster.addEventListener('click', (e) => {
+        target.addEventListener('click', (e) => {
             score++;
             counter.textContent = `❤️ Счет: ${score}`;
             
-            // Новая анимация с блестками
-            for(let i = 0; i < 5; i++) {
-                const spark = document.createElement('div');
-                spark.className = 'sparkles';
-                spark.style.left = e.pageX - 10 + 'px';
-                spark.style.top = e.pageY - 10 + 'px';
-                document.body.appendChild(spark);
+            // Анимация сердечек
+            for(let i = 0; i < 3; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'hearts';
+                heart.textContent = '💖';
+                heart.style.left = e.pageX - 12 + 'px';
+                heart.style.top = e.pageY - 12 + 'px';
+                document.body.appendChild(heart);
                 
-                setTimeout(() => spark.remove(), 1000);
+                setTimeout(() => heart.remove(), 1000);
             }
 
             if(score >= 20) {
                 invitation.style.display = 'block';
-                hamster.style.display = 'none';
+                target.style.display = 'none';
                 Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
             }
         });
 
-        // Перемещение с анимацией
-        function moveHamster() {
+        // Перемещение цели
+        function moveTarget() {
             if(score < 20) {
-                const maxX = window.innerWidth - 350;
-                const maxY = window.innerHeight - 350;
+                const maxX = window.innerWidth - 100;
+                const maxY = window.innerHeight - 100;
                 const newX = Math.random() * maxX;
                 const newY = Math.random() * maxY;
                 
-                hamster.style.transition = 'all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                hamster.style.left = newX + 'px';
-                hamster.style.top = newY + 'px';
+                target.style.transition = 'all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                target.style.left = newX + 'px';
+                target.style.top = newY + 'px';
             }
         }
 
-        setInterval(moveHamster, 1500);
-        moveHamster();
+        setInterval(moveTarget, 1500);
+        moveTarget();
     </script>
 </body>
 </html>
